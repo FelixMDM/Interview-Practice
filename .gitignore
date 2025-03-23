@@ -1,0 +1,61 @@
+# Node.js dependencies
+node_modules/
+.pnpm-store/
+bower_components/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Build artifacts
+dist/
+build/
+out/
+.next/
+.nuxt/
+.svelte-kit/
+.cache/
+
+# Testing
+test-results/
+.nyc_output/
+coverage/
+
+# Miscellaneous
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# Dependency directories
+jspm_packages/
+
+# Miscellaneous IDE and editor settings
+*.iml
+*.ipr
+*.iws
