@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Task } from '@/types/task';
+import { Task, TaskStatus } from '@/types/task';
+import { stat } from 'fs';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -12,7 +13,7 @@ const api = axios.create({
 
 export const taskApi = {
   getAllTasks: async (): Promise<Task[]> => {
-    const response = await api.get('/tasks');
+    const response = await api.get(`/tasks`);
     return response.data;
   },
 
@@ -33,5 +34,12 @@ export const taskApi = {
 
   deleteTask: async (id: number): Promise<void> => {
     await api.delete(`/tasks/${id}`);
+  },
+
+  filterTasks: async (status: TaskStatus): Promise<Task[]> => {
+    console.log(`Called filter by ${status}`);
+    const response = await api.get(`/tasks/filter/${status}`);
+    console.log(`Returned successfully with ${response.data.length} tasks`);
+    return response.data;
   },
 }; 

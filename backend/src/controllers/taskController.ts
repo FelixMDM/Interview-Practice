@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { TaskService, CreateTaskDTO, UpdateTaskDTO } from '../services/taskService';
+import { parseArgs } from 'util';
 
 const taskService = new TaskService();
 
@@ -56,6 +57,22 @@ export class TaskController {
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete task' });
+    }
+  }
+
+  async filterTasks(req: Request, res: Response) {
+    try {
+      const status = req.params.status;
+      console.log(`Filtering by status: ${status}`);
+      
+      if (!['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status parameter' });
+      }
+      
+      const tasks = await taskService.filterTasks(status);
+      res.json(tasks);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch tasks by status' });
     }
   }
 } 

@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import TaskList from '@/components/TaskList';
 import TaskForm from '@/components/TaskForm';
 import { taskApi } from '@/api/taskApi';
-import { Task } from '@/types/task';
+import { Task, TaskStatus } from '@/types/task';
+import { data } from 'autoprefixer';
 
 export default function Home() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [filter, setFilter] = useState<TaskStatus | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading, error } = useQuery('tasks', taskApi.getAllTasks);
 
-  const createTaskMutation = useMutation(taskApi.createTask, {
+  const createTaskMutation = useMutation  (taskApi.createTask, {
     onSuccess: () => {
       queryClient.invalidateQueries('tasks');
       setIsFormOpen(false);
@@ -60,6 +62,21 @@ export default function Home() {
     setEditingTask(undefined);
   };
 
+  const sortBy = (status: TaskStatus) => {
+    setFilter(status);
+  };
+
+  useEffect(() => {
+    console.log(`Filtering by: ${filter}`);
+    if (filter) {
+      taskApi.filterTasks(filter)
+        .then(filteredTasks => {
+          queryClient.setQueryData('tasks', filteredTasks);
+        })
+        .catch(error => console.error(`Failed to filter by ${filter}:`, error));
+    }
+  }, [filter, queryClient]);
+
   if (error) {
     return <div className="text-red-500">Error loading tasks: {(error as Error).message}</div>;
   }
@@ -70,6 +87,26 @@ export default function Home() {
         <div className="px-4 py-6 sm:px-0">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Task Manager</h1>
+            <div className="flex flex-row space-x-4">
+              <button
+                onClick={() => sortBy('IN_PROGRESS')}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 opacity-75" 
+              >
+                In Progress
+              </button>
+              <button
+                onClick={() => sortBy('PENDING')}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-blue-700 opacity-75" 
+              >
+                Pending
+              </button>
+              <button
+                onClick={() => sortBy('COMPLETED')}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-blue-700 opacity-75" 
+              >
+                Completed
+              </button>
+            </div>
             <button
               onClick={() => setIsFormOpen(true)}
               className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"

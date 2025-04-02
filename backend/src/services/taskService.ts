@@ -50,4 +50,13 @@ export class TaskService {
       where: { id },
     });
   }
+
+  async filterTasks(status: string): Promise<Task[] | null> {
+    console.log("Prisma query")
+    return prisma.task.findMany({
+      where: { 
+        status: status,
+      },
+    });
+  } 
 } 
